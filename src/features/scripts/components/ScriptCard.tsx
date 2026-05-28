@@ -40,7 +40,7 @@ export function ScriptCard({
       <div className="mt-4 flex flex-wrap gap-2">
         <Badge>{script.duration}분</Badge>
         <Badge>{SCRIPT_TONE_LABELS[script.tone]}</Badge>
-        {script.attachedFileName ? <Badge>PPT</Badge> : null}
+        {script.attachedFileName ? <Badge>파일 첨부</Badge> : null}
       </div>
       {script.attachedFileName ? (
         <p className="mt-3 truncate rounded-md bg-sky/10 px-3 py-2 text-[13px] font-medium text-slate-700">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "./EmptyState";
 import { FilterTabs } from "./FilterTabs";
 import { ScriptForm } from "./ScriptForm";
@@ -21,6 +21,7 @@ import {
 type StatusFilter = ScriptStatus | "all";
 type ToneFilter = ScriptTone | "all";
 type DurationFilter = ScriptDuration | "all";
+type FileParseStatus = "idle" | "parsing" | "success" | "error";
 
 const STATUS_ORDER: ScriptStatus[] = ["draft", "review", "done"];
 const TONE_OPTIONS: ScriptTone[] = ["natural", "formal", "friendly"];
@@ -31,6 +32,8 @@ export function ScriptWorkspace() {
   const [title, setTitle] = useState("");
   const [sourceText, setSourceText] = useState("");
   const [attachedFile, setAttachedFile] = useState<AttachedPresentationFile | null>(null);
+  const [fileParseStatus, setFileParseStatus] = useState<FileParseStatus>("idle");
+  const [fileParseMessage, setFileParseMessage] = useState<string | null>(null);
   const [selectedTone, setSelectedTone] = useState<ScriptTone>("natural");
   const [selectedDuration, setSelectedDuration] = useState<ScriptDuration>(5);
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<StatusFilter>("all");
@@ -43,6 +46,7 @@ export function ScriptWorkspace() {
   const [copiedScriptId, setCopiedScriptId] = useState<string | null>(null);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+  const fileParseRequestRef = useRef(0);
 
   useEffect(() => {
     const storedScripts = loadScripts();
@@ -95,8 +99,8 @@ export function ScriptWorkspace() {
     const trimmedTitle = title.trim();
     const trimmedSourceText = sourceText.trim();
 
-    if (!trimmedTitle || (!trimmedSourceText && !attachedFile)) {
-      setValidationError("발표 제목과 PPT 내용/키워드 또는 PPT 파일을 입력하세요.");
+    if (!trimmedTitle || !trimmedSourceText) {
+      setValidationError("발표 제목과 PPT/PDF에서 추출한 내용 또는 키워드를 입력하세요.");
       return;
     }
 
@@ -113,8 +117,62 @@ export function ScriptWorkspace() {
     setTitle("");
     setSourceText("");
     setAttachedFile(null);
+    setFileParseStatus("idle");
+    setFileParseMessage(null);
     setValidationError(null);
     setCopiedScriptId(null);
+  }
+
+  async function handleFileChange(file: File | null) {
+    fileParseRequestRef.current += 1;
+    const requestId = fileParseRequestRef.current;
+
+    setValidationError(null);
+
+    if (!file) {
+      setAttachedFile(null);
+      setFileParseStatus("idle");
+      setFileParseMessage(null);
+      return;
+    }
+
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const fileMeta = { name: file.name, size: file.size };
+
+    if (extension === "ppt") {
+      setAttachedFile(null);
+      setFileParseStatus("error");
+      setFileParseMessage("오래된 .ppt 파일은 이번 MVP에서 지원하지 않습니다. .pptx 또는 .pdf 파일을 올려주세요.");
+      return;
+    }
+
+    setAttachedFile(fileMeta);
+    setFileParseStatus("parsing");
+    setFileParseMessage("파일에서 슬라이드 텍스트를 읽는 중입니다...");
+
+    try {
+      const { extractPresentationText } = await import("../file-parser");
+      const extractedText = await extractPresentationText(file);
+
+      if (fileParseRequestRef.current !== requestId) {
+        return;
+      }
+
+      setSourceText(extractedText);
+      setFileParseStatus("success");
+      setFileParseMessage("텍스트를 추출해 입력창에 채웠습니다. 필요하면 수정해 주세요.");
+    } catch (error) {
+      if (fileParseRequestRef.current !== requestId) {
+        return;
+      }
+
+      setFileParseStatus("error");
+      setFileParseMessage(
+        error instanceof Error
+          ? error.message
+          : "파일을 읽지 못했습니다. 내용을 직접 입력해 주세요.",
+      );
+    }
   }
 
   function handleStatusChange(script: PresentationScript) {
@@ -146,8 +204,10 @@ export function ScriptWorkspace() {
         <ScriptForm
           attachedFile={attachedFile}
           duration={selectedDuration}
+          fileParseMessage={fileParseMessage}
+          fileParseStatus={fileParseStatus}
           onDurationChange={setSelectedDuration}
-          onFileChange={setAttachedFile}
+          onFileChange={handleFileChange}
           onSourceTextChange={setSourceText}
           onSubmit={handleCreateScript}
           onTitleChange={setTitle}

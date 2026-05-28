@@ -11,12 +11,14 @@ type ScriptFormProps = {
   tone: ScriptTone;
   duration: ScriptDuration;
   attachedFile: AttachedPresentationFile | null;
+  fileParseStatus: "idle" | "parsing" | "success" | "error";
+  fileParseMessage: string | null;
   validationError: string | null;
   onTitleChange: (title: string) => void;
   onSourceTextChange: (sourceText: string) => void;
   onToneChange: (tone: ScriptTone) => void;
   onDurationChange: (duration: ScriptDuration) => void;
-  onFileChange: (file: AttachedPresentationFile | null) => void;
+  onFileChange: (file: File | null) => void;
   onSubmit: () => void;
 };
 
@@ -26,6 +28,8 @@ export function ScriptForm({
   tone,
   duration,
   attachedFile,
+  fileParseStatus,
+  fileParseMessage,
   validationError,
   onTitleChange,
   onSourceTextChange,
@@ -59,43 +63,57 @@ export function ScriptForm({
 
         <div>
           <label className="text-[15px] font-medium text-slate-900" htmlFor="script-source">
-            PPT 내용 또는 발표 키워드
+            PPT/PDF 내용 또는 발표 키워드
           </label>
           <Textarea
             id="script-source"
             onChange={(event) => onSourceTextChange(event.target.value)}
-            placeholder="발표에 포함할 핵심 문장이나 키워드를 입력하세요."
+            placeholder="파일에서 추출된 텍스트를 확인하거나, 발표에 포함할 핵심 문장과 키워드를 입력하세요."
             value={sourceText}
           />
         </div>
 
         <div>
           <label className="text-[15px] font-medium text-slate-900" htmlFor="ppt-file">
-            PPT 파일 첨부
+            PPTX/PDF 파일 첨부
           </label>
           <label
             className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-sky bg-sky/5 px-4 py-5 text-center transition hover:-translate-y-0.5 hover:bg-sky/10"
             htmlFor="ppt-file"
           >
             <span className="text-[15px] font-medium text-slate-900">
-              {attachedFile ? attachedFile.name : ".ppt 또는 .pptx 파일 선택"}
+              {attachedFile ? attachedFile.name : ".pptx 또는 .pdf 파일 선택"}
             </span>
             <span className="mt-1 text-[14px] text-slate-600">
               {attachedFile
                 ? `${Math.max(1, Math.round(attachedFile.size / 1024))}KB 첨부됨`
-                : "파일 첨부는 선택 사항이며, 입력한 키워드와 함께 대본에 반영됩니다."}
+                : "파일을 선택하면 내부 텍스트를 읽어 입력창에 자동으로 채웁니다."}
             </span>
           </label>
           <input
-            accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            accept=".ppt,.pptx,.pdf,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
             className="sr-only"
             id="ppt-file"
             onChange={(event) => {
               const file = event.target.files?.[0];
-              onFileChange(file ? { name: file.name, size: file.size } : null);
+              onFileChange(file ?? null);
+              event.currentTarget.value = "";
             }}
             type="file"
           />
+          {fileParseMessage ? (
+            <p
+              className={`mt-2 rounded-md px-3 py-2 text-[14px] font-medium ${
+                fileParseStatus === "error"
+                  ? "bg-red-50 text-red-700"
+                  : fileParseStatus === "success"
+                    ? "bg-mint/10 text-emerald-800"
+                    : "bg-sky/10 text-slate-700"
+              }`}
+            >
+              {fileParseMessage}
+            </p>
+          ) : null}
           {attachedFile ? (
             <button
               className="mt-2 text-[14px] font-medium text-coral transition hover:text-rose-600"
@@ -116,8 +134,12 @@ export function ScriptForm({
           </p>
         ) : null}
 
-        <Button className="w-full shadow-sm hover:-translate-y-0.5" type="submit">
-          대본 생성
+        <Button
+          className="w-full shadow-sm hover:-translate-y-0.5"
+          disabled={fileParseStatus === "parsing"}
+          type="submit"
+        >
+          {fileParseStatus === "parsing" ? "파일 읽는 중" : "대본 생성"}
         </Button>
       </form>
     </Card>

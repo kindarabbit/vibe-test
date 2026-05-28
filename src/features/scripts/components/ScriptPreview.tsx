@@ -22,7 +22,7 @@ export function ScriptPreview({
         <Badge>{script.duration}분</Badge>
         <Badge>{SCRIPT_TONE_LABELS[script.tone]}</Badge>
         <Badge>{SCRIPT_STATUS_LABELS[script.status]}</Badge>
-        {script.attachedFileName ? <Badge>PPT 첨부</Badge> : null}
+        {script.attachedFileName ? <Badge>파일 첨부</Badge> : null}
       </div>
       <h2 className="mt-4 text-2xl font-medium text-slate-950">{script.title}</h2>
       {script.attachedFileName ? (

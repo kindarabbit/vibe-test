@@ -19,7 +19,7 @@ export function createMockScript(input: CreateScriptInput): PresentationScript {
   return {
     id: createId(),
     title: input.title,
-    sourceText: input.sourceText || "첨부한 PPT 파일을 기반으로 발표 흐름을 준비합니다.",
+    sourceText: input.sourceText,
     tone: input.tone,
     duration: input.duration,
     status: "draft",
@@ -45,13 +45,13 @@ function buildPlaceholderContent(input: CreateScriptInput) {
   }[input.duration];
 
   const fileLine = input.attachedFile
-    ? `첨부한 PPT 파일은 "${input.attachedFile.name}"입니다. 이 자료의 흐름을 기준으로 발표 대본을 다듬겠습니다.`
-    : "별도 PPT 파일 첨부 없이 입력한 키워드를 기준으로 발표 흐름을 구성하겠습니다.";
+    ? `첨부한 자료는 "${input.attachedFile.name}"입니다. 추출된 텍스트의 흐름을 기준으로 발표 대본을 다듬겠습니다.`
+    : "별도 파일 첨부 없이 입력한 키워드를 기준으로 발표 흐름을 구성하겠습니다.";
 
   return [
     `안녕하세요. 오늘은 ${input.title}에 대해 발표하겠습니다.`,
     fileLine,
-    `먼저 발표의 핵심 내용은 ${input.sourceText || "첨부 자료의 주요 슬라이드"}입니다. ${toneIntro} 이 내용을 하나씩 풀어보겠습니다.`,
+    `먼저 발표의 핵심 내용은 ${input.sourceText}입니다. ${toneIntro} 이 내용을 하나씩 풀어보겠습니다.`,
     durationGuide,
     "마지막으로 오늘 다룬 내용을 정리하고, 발표 주제가 왜 중요한지 다시 짚으며 마무리하겠습니다.",
   ].join("\n\n");
