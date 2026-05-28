@@ -5,9 +5,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#1f2937",
-        mint: "#1fbf9a",
-        coral: "#f97363",
+        ink: "#111827",
+        mint: "#14b8a6",
+        coral: "#fb7185",
+        sky: "#38bdf8",
+        amber: "#f59e0b",
+        violet: "#8b5cf6",
       },
     },
   },

@@ -32,7 +32,7 @@ test("shows validation when required inputs are missing", async ({ page }) => {
   await page.getByRole("button", { name: "대본 생성" }).click();
 
   await expect(
-    page.getByText("발표 제목과 PPT 내용 또는 발표 키워드를 모두 입력하세요."),
+    page.getByText("발표 제목과 PPT 내용/키워드 또는 PPT 파일을 입력하세요."),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "아직 생성된 대본이 없습니다." }).first(),
@@ -73,4 +73,20 @@ test("persists generated scripts after reload", async ({ page }) => {
   await page.reload();
 
   await expect(page.getByRole("heading", { name: "AI 윤리 발표" })).toBeVisible();
+});
+
+test("attaches a PPT file and reflects it in the generated script", async ({ page }) => {
+  await openCleanApp(page);
+
+  await page.getByLabel("발표 제목").fill("팀 프로젝트 발표");
+  await page.getByLabel("PPT 파일 첨부").setInputFiles({
+    name: "team-project.pptx",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    buffer: Buffer.from("fake pptx content"),
+  });
+  await page.getByRole("button", { name: "대본 생성" }).click();
+
+  await expect(page.getByText("team-project.pptx").first()).toBeVisible();
+  await expect(page.getByText("PPT 첨부").first()).toBeVisible();
 });

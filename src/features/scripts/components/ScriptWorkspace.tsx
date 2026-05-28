@@ -11,6 +11,7 @@ import { createMockScript } from "../generator";
 import { loadScripts, saveScripts } from "../storage";
 import {
   SCRIPT_TONE_LABELS,
+  type AttachedPresentationFile,
   type PresentationScript,
   type ScriptDuration,
   type ScriptStatus,
@@ -29,6 +30,7 @@ export function ScriptWorkspace() {
   const [scripts, setScripts] = useState<PresentationScript[]>([]);
   const [title, setTitle] = useState("");
   const [sourceText, setSourceText] = useState("");
+  const [attachedFile, setAttachedFile] = useState<AttachedPresentationFile | null>(null);
   const [selectedTone, setSelectedTone] = useState<ScriptTone>("natural");
   const [selectedDuration, setSelectedDuration] = useState<ScriptDuration>(5);
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<StatusFilter>("all");
@@ -76,7 +78,8 @@ export function ScriptWorkspace() {
         normalizedQuery.length === 0 ||
         script.title.toLowerCase().includes(normalizedQuery) ||
         script.sourceText.toLowerCase().includes(normalizedQuery) ||
-        script.content.toLowerCase().includes(normalizedQuery);
+        script.content.toLowerCase().includes(normalizedQuery) ||
+        script.attachedFileName?.toLowerCase().includes(normalizedQuery);
 
       return matchesStatus && matchesTone && matchesDuration && matchesQuery;
     });
@@ -92,8 +95,8 @@ export function ScriptWorkspace() {
     const trimmedTitle = title.trim();
     const trimmedSourceText = sourceText.trim();
 
-    if (!trimmedTitle || !trimmedSourceText) {
-      setValidationError("발표 제목과 PPT 내용 또는 발표 키워드를 모두 입력하세요.");
+    if (!trimmedTitle || (!trimmedSourceText && !attachedFile)) {
+      setValidationError("발표 제목과 PPT 내용/키워드 또는 PPT 파일을 입력하세요.");
       return;
     }
 
@@ -102,12 +105,14 @@ export function ScriptWorkspace() {
       sourceText: trimmedSourceText,
       tone: selectedTone,
       duration: selectedDuration,
+      attachedFile,
     });
 
     setScripts((currentScripts) => [script, ...currentScripts]);
     setActiveScriptId(script.id);
     setTitle("");
     setSourceText("");
+    setAttachedFile(null);
     setValidationError(null);
     setCopiedScriptId(null);
   }
@@ -139,8 +144,10 @@ export function ScriptWorkspace() {
     <>
       <section className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <ScriptForm
+          attachedFile={attachedFile}
           duration={selectedDuration}
           onDurationChange={setSelectedDuration}
+          onFileChange={setAttachedFile}
           onSourceTextChange={setSourceText}
           onSubmit={handleCreateScript}
           onTitleChange={setTitle}
@@ -184,7 +191,7 @@ export function ScriptWorkspace() {
               말투 필터
             </label>
             <select
-              className="rounded-md border border-slate-300 bg-white px-3 py-2.5 text-[15px]"
+              className="rounded-md border border-slate-300 bg-white px-3 py-2.5 text-[15px] transition hover:border-sky"
               id="tone-filter"
               onChange={(event) =>
                 setSelectedToneFilter(event.target.value as ToneFilter)
@@ -202,7 +209,7 @@ export function ScriptWorkspace() {
               발표 시간 필터
             </label>
             <select
-              className="rounded-md border border-slate-300 bg-white px-3 py-2.5 text-[15px]"
+              className="rounded-md border border-slate-300 bg-white px-3 py-2.5 text-[15px] transition hover:border-sky"
               id="duration-filter"
               onChange={(event) => {
                 const value = event.target.value;

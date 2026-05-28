@@ -15,10 +15,10 @@ export function DurationSelector({ value, onChange }: DurationSelectorProps) {
         {durations.map((duration) => (
           <button
             aria-pressed={value === duration}
-            className={`rounded-md border px-3 py-2 text-[15px] ${
+            className={`rounded-md border px-3 py-2 text-[15px] transition hover:-translate-y-0.5 ${
               value === duration
-                ? "border-coral bg-coral/10 text-slate-900"
-                : "border-slate-200 bg-white text-slate-600"
+                ? "border-coral bg-coral/10 text-slate-950 shadow-sm"
+                : "border-slate-200 bg-white text-slate-600 hover:border-coral"
             }`}
             key={duration}
             onClick={() => onChange(duration)}

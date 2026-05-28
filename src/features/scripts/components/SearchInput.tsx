@@ -10,10 +10,10 @@ export function SearchInput({ value, onChange }: SearchInputProps) {
         대본 검색
       </label>
       <input
-        className="w-full rounded-md border border-slate-300 px-3 py-2.5 text-[15px] outline-none transition placeholder:text-slate-400 focus:border-mint focus:ring-2 focus:ring-mint/20 sm:w-64"
+        className="w-full rounded-md border border-slate-300 px-3 py-2.5 text-[15px] outline-none transition placeholder:text-slate-400 hover:border-sky focus:border-mint focus:ring-2 focus:ring-mint/20 sm:w-64"
         id="script-search"
         onChange={(event) => onChange(event.target.value)}
-        placeholder="제목 또는 키워드 검색"
+        placeholder="제목, 키워드, 파일명 검색"
         type="search"
         value={value}
       />

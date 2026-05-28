@@ -16,10 +16,10 @@ export function FilterTabs({ value, onChange }: FilterTabsProps) {
       {filters.map((filter) => (
         <button
           aria-pressed={value === filter}
-          className={`rounded-md border px-3 py-2 text-[14px] ${
+          className={`rounded-md border px-3 py-2 text-[14px] transition hover:-translate-y-0.5 ${
             value === filter
-              ? "border-ink bg-ink text-white"
-              : "border-slate-200 bg-white text-slate-600"
+              ? "border-ink bg-ink text-white shadow-sm"
+              : "border-slate-200 bg-white text-slate-600 hover:border-sky hover:bg-sky/5"
           }`}
           key={filter}
           onClick={() => onChange(filter)}

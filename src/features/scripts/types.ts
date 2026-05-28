@@ -14,6 +14,13 @@ export type PresentationScript = {
   content: string;
   createdAt: string;
   updatedAt: string;
+  attachedFileName?: string;
+  attachedFileSize?: number;
+};
+
+export type AttachedPresentationFile = {
+  name: string;
+  size: number;
 };
 
 export const SCRIPT_TONE_LABELS: Record<ScriptTone, string> = {

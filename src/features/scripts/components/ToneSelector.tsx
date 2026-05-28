@@ -16,10 +16,10 @@ export function ToneSelector({ value, onChange }: ToneSelectorProps) {
         {tones.map((tone) => (
           <button
             aria-pressed={value === tone}
-            className={`rounded-md border px-3 py-2 text-[15px] ${
+            className={`rounded-md border px-3 py-2 text-[15px] transition hover:-translate-y-0.5 ${
               value === tone
-                ? "border-mint bg-mint/10 text-slate-900"
-                : "border-slate-200 bg-white text-slate-600"
+                ? "border-mint bg-mint/10 text-slate-950 shadow-sm"
+                : "border-slate-200 bg-white text-slate-600 hover:border-mint"
             }`}
             key={tone}
             onClick={() => onChange(tone)}

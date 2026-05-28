@@ -17,11 +17,15 @@ export function ScriptCard({
   onStatusChange,
 }: ScriptCardProps) {
   return (
-    <Card className={`p-4 ${isActive ? "ring-2 ring-mint/40" : ""}`}>
+    <Card
+      className={`p-4 hover:-translate-y-0.5 hover:shadow-md ${
+        isActive ? "ring-2 ring-mint/40" : ""
+      }`}
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <button
-            className="text-left text-base font-medium text-slate-950 hover:text-mint"
+            className="text-left text-base font-medium text-slate-950 transition hover:text-mint"
             onClick={onSelect}
             type="button"
           >
@@ -36,9 +40,15 @@ export function ScriptCard({
       <div className="mt-4 flex flex-wrap gap-2">
         <Badge>{script.duration}분</Badge>
         <Badge>{SCRIPT_TONE_LABELS[script.tone]}</Badge>
+        {script.attachedFileName ? <Badge>PPT</Badge> : null}
       </div>
+      {script.attachedFileName ? (
+        <p className="mt-3 truncate rounded-md bg-sky/10 px-3 py-2 text-[13px] font-medium text-slate-700">
+          {script.attachedFileName}
+        </p>
+      ) : null}
       <button
-        className="mt-4 rounded-md border border-slate-300 px-3 py-2 text-[14px] font-medium text-slate-700"
+        className="mt-4 rounded-md border border-slate-300 px-3 py-2 text-[14px] font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-coral hover:bg-coral/5"
         onClick={onStatusChange}
         type="button"
       >

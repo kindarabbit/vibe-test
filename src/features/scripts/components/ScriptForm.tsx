@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Textarea } from "@/components/ui/Textarea";
-import type { ScriptDuration, ScriptTone } from "../types";
+import type { AttachedPresentationFile, ScriptDuration, ScriptTone } from "../types";
 import { DurationSelector } from "./DurationSelector";
 import { ToneSelector } from "./ToneSelector";
 
@@ -10,11 +10,13 @@ type ScriptFormProps = {
   sourceText: string;
   tone: ScriptTone;
   duration: ScriptDuration;
+  attachedFile: AttachedPresentationFile | null;
   validationError: string | null;
   onTitleChange: (title: string) => void;
   onSourceTextChange: (sourceText: string) => void;
   onToneChange: (tone: ScriptTone) => void;
   onDurationChange: (duration: ScriptDuration) => void;
+  onFileChange: (file: AttachedPresentationFile | null) => void;
   onSubmit: () => void;
 };
 
@@ -23,15 +25,17 @@ export function ScriptForm({
   sourceText,
   tone,
   duration,
+  attachedFile,
   validationError,
   onTitleChange,
   onSourceTextChange,
   onToneChange,
   onDurationChange,
+  onFileChange,
   onSubmit,
 }: ScriptFormProps) {
   return (
-    <Card>
+    <Card className="animate-fade-up hover:-translate-y-0.5 hover:shadow-md">
       <form
         className="space-y-5"
         onSubmit={(event) => {
@@ -65,6 +69,44 @@ export function ScriptForm({
           />
         </div>
 
+        <div>
+          <label className="text-[15px] font-medium text-slate-900" htmlFor="ppt-file">
+            PPT 파일 첨부
+          </label>
+          <label
+            className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-sky bg-sky/5 px-4 py-5 text-center transition hover:-translate-y-0.5 hover:bg-sky/10"
+            htmlFor="ppt-file"
+          >
+            <span className="text-[15px] font-medium text-slate-900">
+              {attachedFile ? attachedFile.name : ".ppt 또는 .pptx 파일 선택"}
+            </span>
+            <span className="mt-1 text-[14px] text-slate-600">
+              {attachedFile
+                ? `${Math.max(1, Math.round(attachedFile.size / 1024))}KB 첨부됨`
+                : "파일 첨부는 선택 사항이며, 입력한 키워드와 함께 대본에 반영됩니다."}
+            </span>
+          </label>
+          <input
+            accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            className="sr-only"
+            id="ppt-file"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              onFileChange(file ? { name: file.name, size: file.size } : null);
+            }}
+            type="file"
+          />
+          {attachedFile ? (
+            <button
+              className="mt-2 text-[14px] font-medium text-coral transition hover:text-rose-600"
+              onClick={() => onFileChange(null)}
+              type="button"
+            >
+              첨부 제거
+            </button>
+          ) : null}
+        </div>
+
         <ToneSelector onChange={onToneChange} value={tone} />
         <DurationSelector onChange={onDurationChange} value={duration} />
 
@@ -74,7 +116,7 @@ export function ScriptForm({
           </p>
         ) : null}
 
-        <Button type="submit">
+        <Button className="w-full shadow-sm hover:-translate-y-0.5" type="submit">
           대본 생성
         </Button>
       </form>
