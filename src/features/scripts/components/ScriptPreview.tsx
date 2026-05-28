@@ -1,20 +1,27 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { SCRIPT_STATUS_LABELS, SCRIPT_TONE_LABELS } from "../types";
-import type { PresentationScript } from "../types";
+import type { PresentationScript, ScriptDuration, ScriptTone } from "../types";
+
+const TONE_OPTIONS: ScriptTone[] = ["natural", "formal", "friendly"];
+const DURATION_OPTIONS: ScriptDuration[] = [5, 10, 15];
 
 type ScriptPreviewProps = {
   script: PresentationScript;
   copied: boolean;
   onCopy: (script: PresentationScript) => void;
+  onDurationChange: (duration: ScriptDuration) => void;
   onStatusChange: (script: PresentationScript) => void;
+  onToneChange: (tone: ScriptTone) => void;
 };
 
 export function ScriptPreview({
   script,
   copied,
   onCopy,
+  onDurationChange,
   onStatusChange,
+  onToneChange,
 }: ScriptPreviewProps) {
   return (
     <Card className="animate-fade-up border-sky/30 hover:-translate-y-0.5 hover:shadow-md">
@@ -30,6 +37,61 @@ export function ScriptPreview({
           첨부 파일: {script.attachedFileName}
         </p>
       ) : null}
+
+      <div className="mt-4 grid gap-3 rounded-lg border border-slate-200 bg-white/80 p-3 sm:grid-cols-2">
+        <div>
+          <p className="text-[14px] font-medium text-slate-900">말투 다시 선택</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {TONE_OPTIONS.map((tone) => {
+              const isSelected = script.tone === tone;
+
+              return (
+                <button
+                  aria-label={`생성된 대본 말투를 ${SCRIPT_TONE_LABELS[tone]}로 변경`}
+                  aria-pressed={isSelected}
+                  className={`rounded-md border px-3 py-2 text-[14px] font-medium transition hover:-translate-y-0.5 ${
+                    isSelected
+                      ? "border-mint bg-mint/10 text-slate-950"
+                      : "border-slate-300 text-slate-700 hover:border-mint"
+                  }`}
+                  key={tone}
+                  onClick={() => onToneChange(tone)}
+                  type="button"
+                >
+                  {SCRIPT_TONE_LABELS[tone]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-[14px] font-medium text-slate-900">발표 시간 다시 선택</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {DURATION_OPTIONS.map((duration) => {
+              const isSelected = script.duration === duration;
+
+              return (
+                <button
+                  aria-label={`생성된 대본 발표 시간을 ${duration}분으로 변경`}
+                  aria-pressed={isSelected}
+                  className={`rounded-md border px-3 py-2 text-[14px] font-medium transition hover:-translate-y-0.5 ${
+                    isSelected
+                      ? "border-coral bg-coral/10 text-slate-950"
+                      : "border-slate-300 text-slate-700 hover:border-coral"
+                  }`}
+                  key={duration}
+                  onClick={() => onDurationChange(duration)}
+                  type="button"
+                >
+                  {duration}분
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       <div
         aria-live="polite"
         className="mt-4 whitespace-pre-line rounded-md bg-gradient-to-br from-slate-50 via-white to-mint/5 p-4 text-[15px] leading-8 text-slate-700"

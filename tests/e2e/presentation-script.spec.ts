@@ -26,6 +26,27 @@ test("creates a presentation script from required inputs", async ({ page }) => {
   await expect(page.getByText("책임 있는 사용").first()).toBeVisible();
 });
 
+test("updates generated script tone and duration from the preview", async ({ page }) => {
+  await openCleanApp(page);
+  await createScript(page);
+
+  await page
+    .getByRole("button", { name: "생성된 대본 말투를 친근하게로 변경" })
+    .click();
+  await page
+    .getByRole("button", { name: "생성된 대본 발표 시간을 15분으로 변경" })
+    .click();
+
+  await expect(
+    page.getByRole("button", { name: "생성된 대본 말투를 친근하게로 변경" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "생성된 대본 발표 시간을 15분으로 변경" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("듣는 사람이 쉽게 따라올 수 있도록").first()).toBeVisible();
+  await expect(page.getByText("배경, 핵심 내용, 시사점까지").first()).toBeVisible();
+});
+
 test("shows validation when required inputs are missing", async ({ page }) => {
   await openCleanApp(page);
 
@@ -72,7 +93,8 @@ test("persists generated scripts after reload", async ({ page }) => {
 
   await page.reload();
 
-  await expect(page.getByRole("heading", { name: "AI 윤리 발표" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "미리볼 대본을 선택해 주세요." })).toBeVisible();
+  await expect(page.getByRole("button", { name: "AI 윤리 발표" })).toBeVisible();
 });
 
 test("extracts PPTX text into the editable source field", async ({ page }) => {

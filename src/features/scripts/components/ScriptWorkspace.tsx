@@ -7,7 +7,7 @@ import { ScriptForm } from "./ScriptForm";
 import { ScriptList } from "./ScriptList";
 import { ScriptPreview } from "./ScriptPreview";
 import { SearchInput } from "./SearchInput";
-import { createMockScript } from "../generator";
+import { createMockScript, createScriptVariant } from "../generator";
 import { loadScripts, saveScripts } from "../storage";
 import {
   SCRIPT_TONE_LABELS,
@@ -51,7 +51,7 @@ export function ScriptWorkspace() {
   useEffect(() => {
     const storedScripts = loadScripts();
     setScripts(storedScripts);
-    setActiveScriptId(storedScripts[0]?.id ?? null);
+    setActiveScriptId(null);
     setHasLoadedStorage(true);
   }, []);
 
@@ -65,7 +65,7 @@ export function ScriptWorkspace() {
   }, [hasLoadedStorage, scripts]);
 
   const activeScript = useMemo(
-    () => scripts.find((script) => script.id === activeScriptId) ?? scripts[0] ?? null,
+    () => scripts.find((script) => script.id === activeScriptId) ?? null,
     [activeScriptId, scripts],
   );
 
@@ -189,6 +189,21 @@ export function ScriptWorkspace() {
     );
   }
 
+  function handleVariantChange(
+    script: PresentationScript,
+    updates: { tone?: ScriptTone; duration?: ScriptDuration },
+  ) {
+    const updatedScript = createScriptVariant(script, updates);
+
+    setScripts((currentScripts) =>
+      currentScripts.map((currentScript) =>
+        currentScript.id === script.id ? updatedScript : currentScript,
+      ),
+    );
+    setActiveScriptId(script.id);
+    setCopiedScriptId(null);
+  }
+
   async function handleCopy(script: PresentationScript) {
     try {
       await navigator.clipboard.writeText(script.content);
@@ -220,12 +235,23 @@ export function ScriptWorkspace() {
         {activeScript ? (
           <ScriptPreview
             copied={copiedScriptId === activeScript.id}
+            onDurationChange={(duration) =>
+              handleVariantChange(activeScript, { duration })
+            }
             onCopy={handleCopy}
             onStatusChange={handleStatusChange}
+            onToneChange={(tone) => handleVariantChange(activeScript, { tone })}
             script={activeScript}
           />
         ) : (
-          <EmptyState />
+          <EmptyState
+            description={
+              scripts.length > 0
+                ? "저장된 대본이 있습니다. 아래 목록에서 하나를 선택하거나 새 발표 자료를 입력해 대본을 만들어 보세요."
+                : undefined
+            }
+            title={scripts.length > 0 ? "미리볼 대본을 선택해 주세요." : undefined}
+          />
         )}
       </section>
 

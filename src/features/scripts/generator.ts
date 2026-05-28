@@ -13,6 +13,11 @@ type CreateScriptInput = {
   attachedFile: AttachedPresentationFile | null;
 };
 
+type ScriptVariantInput = {
+  tone?: ScriptTone;
+  duration?: ScriptDuration;
+};
+
 export function createMockScript(input: CreateScriptInput): PresentationScript {
   const now = new Date().toISOString();
 
@@ -28,6 +33,34 @@ export function createMockScript(input: CreateScriptInput): PresentationScript {
     updatedAt: now,
     attachedFileName: input.attachedFile?.name,
     attachedFileSize: input.attachedFile?.size,
+  };
+}
+
+export function createScriptVariant(
+  script: PresentationScript,
+  updates: ScriptVariantInput,
+): PresentationScript {
+  const nextScript = {
+    ...script,
+    tone: updates.tone ?? script.tone,
+    duration: updates.duration ?? script.duration,
+    updatedAt: new Date().toISOString(),
+  };
+
+  return {
+    ...nextScript,
+    content: buildPlaceholderContent({
+      title: nextScript.title,
+      sourceText: nextScript.sourceText,
+      tone: nextScript.tone,
+      duration: nextScript.duration,
+      attachedFile: nextScript.attachedFileName
+        ? {
+            name: nextScript.attachedFileName,
+            size: nextScript.attachedFileSize ?? 0,
+          }
+        : null,
+    }),
   };
 }
 
