@@ -10,4 +10,4 @@
 
 - [x] 2.1 Validate the OpenSpec change.
 - [x] 2.2 Run the relevant project verification command.
-- [ ] 2.3 Commit and push the documentation change.
+- [x] 2.3 Commit and push the documentation change.
