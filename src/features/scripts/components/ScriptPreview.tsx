@@ -1,10 +1,12 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { SCRIPT_STATUS_LABELS, SCRIPT_TONE_LABELS } from "../types";
+import {
+  SCRIPT_DURATION_OPTIONS,
+  SCRIPT_STATUS_LABELS,
+  SCRIPT_TONE_LABELS,
+  SCRIPT_TONE_OPTIONS,
+} from "../types";
 import type { PresentationScript, ScriptDuration, ScriptTone } from "../types";
-
-const TONE_OPTIONS: ScriptTone[] = ["natural", "formal", "friendly"];
-const DURATION_OPTIONS: ScriptDuration[] = [5, 10, 15];
 
 type ScriptPreviewProps = {
   script: PresentationScript;
@@ -42,7 +44,7 @@ export function ScriptPreview({
         <div>
           <p className="text-[14px] font-medium text-slate-900">말투 다시 선택</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {TONE_OPTIONS.map((tone) => {
+            {SCRIPT_TONE_OPTIONS.map((tone) => {
               const isSelected = script.tone === tone;
 
               return (
@@ -68,7 +70,7 @@ export function ScriptPreview({
         <div>
           <p className="text-[14px] font-medium text-slate-900">발표 시간 다시 선택</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {DURATION_OPTIONS.map((duration) => {
+            {SCRIPT_DURATION_OPTIONS.map((duration) => {
               const isSelected = script.duration === duration;
 
               return (

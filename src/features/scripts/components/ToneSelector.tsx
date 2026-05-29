@@ -1,7 +1,5 @@
 import type { ScriptTone } from "../types";
-import { SCRIPT_TONE_LABELS } from "../types";
-
-const tones: ScriptTone[] = ["natural", "formal", "friendly"];
+import { SCRIPT_TONE_LABELS, SCRIPT_TONE_OPTIONS } from "../types";
 
 type ToneSelectorProps = {
   value: ScriptTone;
@@ -13,7 +11,7 @@ export function ToneSelector({ value, onChange }: ToneSelectorProps) {
     <fieldset>
       <legend className="text-[15px] font-medium text-slate-900">말투</legend>
       <div className="mt-2 flex flex-wrap gap-2">
-        {tones.map((tone) => (
+        {SCRIPT_TONE_OPTIONS.map((tone) => (
           <button
             aria-pressed={value === tone}
             className={`rounded-md border px-3 py-2 text-[15px] transition hover:-translate-y-0.5 ${

@@ -1,6 +1,5 @@
 import type { ScriptDuration } from "../types";
-
-const durations: ScriptDuration[] = [5, 10, 15];
+import { SCRIPT_DURATION_OPTIONS } from "../types";
 
 type DurationSelectorProps = {
   value: ScriptDuration;
@@ -12,7 +11,7 @@ export function DurationSelector({ value, onChange }: DurationSelectorProps) {
     <fieldset>
       <legend className="text-[15px] font-medium text-slate-900">발표 시간</legend>
       <div className="mt-2 flex flex-wrap gap-2">
-        {durations.map((duration) => (
+        {SCRIPT_DURATION_OPTIONS.map((duration) => (
           <button
             aria-pressed={value === duration}
             className={`rounded-md border px-3 py-2 text-[15px] transition hover:-translate-y-0.5 ${

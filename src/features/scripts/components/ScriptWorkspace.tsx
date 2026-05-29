@@ -11,6 +11,8 @@ import { createMockScript, createScriptVariant } from "../generator";
 import { loadScripts, saveScripts } from "../storage";
 import {
   SCRIPT_TONE_LABELS,
+  SCRIPT_DURATION_OPTIONS,
+  SCRIPT_TONE_OPTIONS,
   type AttachedPresentationFile,
   type PresentationScript,
   type ScriptDuration,
@@ -24,8 +26,6 @@ type DurationFilter = ScriptDuration | "all";
 type FileParseStatus = "idle" | "parsing" | "success" | "error";
 
 const STATUS_ORDER: ScriptStatus[] = ["draft", "review", "done"];
-const TONE_OPTIONS: ScriptTone[] = ["natural", "formal", "friendly"];
-const DURATION_OPTIONS: ScriptDuration[] = [5, 10, 15];
 
 export function ScriptWorkspace() {
   const [scripts, setScripts] = useState<PresentationScript[]>([]);
@@ -285,7 +285,7 @@ export function ScriptWorkspace() {
               value={selectedToneFilter}
             >
               <option value="all">모든 말투</option>
-              {TONE_OPTIONS.map((tone) => (
+              {SCRIPT_TONE_OPTIONS.map((tone) => (
                 <option key={tone} value={tone}>
                   {SCRIPT_TONE_LABELS[tone]}
                 </option>
@@ -306,7 +306,7 @@ export function ScriptWorkspace() {
               value={selectedDurationFilter}
             >
               <option value="all">모든 시간</option>
-              {DURATION_OPTIONS.map((duration) => (
+              {SCRIPT_DURATION_OPTIONS.map((duration) => (
                 <option key={duration} value={duration}>
                   {duration}분
                 </option>

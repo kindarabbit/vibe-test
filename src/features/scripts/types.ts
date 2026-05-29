@@ -23,6 +23,10 @@ export type AttachedPresentationFile = {
   size: number;
 };
 
+export const SCRIPT_TONE_OPTIONS: ScriptTone[] = ["natural", "formal", "friendly"];
+
+export const SCRIPT_DURATION_OPTIONS: ScriptDuration[] = [5, 10, 15];
+
 export const SCRIPT_TONE_LABELS: Record<ScriptTone, string> = {
   natural: "자연스럽게",
   formal: "공식적으로",
